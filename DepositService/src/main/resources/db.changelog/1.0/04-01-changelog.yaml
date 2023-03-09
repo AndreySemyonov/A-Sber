@@ -1,0 +1,383 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1667567633061-1
+      author: init-database
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_account
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: account_number
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: client_id
+                  type: UUID
+              - column:
+                  name: currency_code
+                  type: CHAR(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: current_balance
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: open_date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: close_date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: salary_project
+                  type: VARCHAR(30)
+              - column:
+                  name: blocked_sum
+                  type: DECIMAL(19,4)
+            tableName: account
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_agreement
+                  name: id
+                  type: UUID
+              - column:
+                  name: agreement_number
+                  type: VARCHAR(30)
+              - column:
+                  name: account_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: interest_rate
+                  type: DECIMAL(6,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: start_date
+                  type: timestamp with time zone
+              - column:
+                  constraints:
+                    nullable: false
+                  name: end_date
+                  type: timestamp with time zone
+              - column:
+                  constraints:
+                    nullable: false
+                  name: initial_amount
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: current_balance
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  constraints:
+                    nullable: false
+                  name: auto_renewal
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: product_id
+                  type: INTEGER
+            tableName: agreement
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_card
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: card_number
+                  type: CHAR(16)
+              - column:
+                  name: account_id
+                  type: UUID
+              - column:
+                  name: transaction_limit
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: expiration_date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: holder_name
+                  type: VARCHAR(50)
+              - column:
+                  name: digital_wallet
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_default
+                  type: BOOLEAN
+              - column:
+                  name: card_product_id
+                  type: INT
+            tableName: card
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_card_product
+                  name: id
+                  type: INT
+              - column:
+                  name: card_name
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: payment_system
+                  type: VARCHAR(30)
+              - column:
+                  name: cashback
+                  type: DECIMAL(6,4)
+              - column:
+                  name: co_brand
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_virtual
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  constraints:
+                    nullable: false
+                  name: premium_status
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: service_price
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: product_price
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: currency_code
+                  type: CHAR(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: card_duration
+                  type: INT
+            tableName: card_product
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_operation
+                  name: id
+                  type: UUID
+              - column:
+                  name: account_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: completed_at
+                  type: DATETIME
+              - column:
+                  constraints:
+                    nullable: false
+                  name: sum
+                  type: DECIMAL(19,4)
+              - column:
+                  name: details
+                  type: TEXT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: currency_code
+                  type: CHAR(3)
+              - column:
+                  name: operation_type_id
+                  type: INT
+            tableName: operation
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_operation_type
+                  name: id
+                  type: INT
+              - column:
+                  name: type
+                  type: VARCHAR(30)
+              - column:
+                  name: is_debit
+                  type: BOOLEAN
+                  defaultValue: true
+            tableName: operation_type
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_product
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: name
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: schema_name
+                  type: VARCHAR(30)
+              - column:
+                  name: interest_rate_early
+                  type: DECIMAL(6,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_capitalization
+                  type: BOOLEAN
+              - column:
+                  name: amount_min
+                  type: DECIMAL(19,4)
+              - column:
+                  name: amount_max
+                  type: DECIMAL(19,4)
+              - column:
+                  name: currency_code
+                  type: CHAR(3)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_revocable
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  constraints:
+                    nullable: false
+                  name: min_interest_rate
+                  type: DECIMAL(6,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: max_interest_rate
+                  type: DECIMAL(6,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: min_duration_months
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: max_duration_months
+                  type: INT
+              - column:
+                  name: active_since
+                  type: DATE
+              - column:
+                  name: active_until
+                  type: DATE
+            tableName: product
+        - addForeignKeyConstraint:
+            baseColumnNames: account_id
+            baseTableName: agreement
+            constraintName: FK_AGREEMENT_ON_ACCOUNT
+            referencedColumnNames: id
+            referencedTableName: account
+        - addForeignKeyConstraint:
+            baseColumnNames: account_id
+            baseTableName: card
+            constraintName: FK_CARD_ON_ACCOUNT
+            referencedColumnNames: id
+            referencedTableName: account
+        - addForeignKeyConstraint:
+            baseColumnNames: card_product_id
+            baseTableName: card
+            constraintName: FK_CARD_ON_CARD_PRODUCT
+            referencedColumnNames: id
+            referencedTableName: card_product
+        - addForeignKeyConstraint:
+            baseColumnNames: account_id
+            baseTableName: operation
+            constraintName: FK_OPERATION_ON_ACCOUNT
+            referencedColumnNames: id
+            referencedTableName: account
+        - addForeignKeyConstraint:
+            baseColumnNames: operation_type_id
+            baseTableName: operation
+            constraintName: FK_OPERATION_ON_OPERATION_TYPE
+            referencedColumnNames: id
+            referencedTableName: operation_type
+        - addForeignKeyConstraint:
+            baseColumnNames: product_id
+            baseTableName: agreement
+            constraintName: FK_AGREEMENT_ON_PRODUCT
+            referencedColumnNames: id
+            referencedTableName: product

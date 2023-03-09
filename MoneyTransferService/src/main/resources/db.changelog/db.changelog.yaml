@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db.changelog/1.0/15-12-changelog.yaml
+  - include:
+      file: db.changelog/1.0/17-01-change-transfer-type.yaml

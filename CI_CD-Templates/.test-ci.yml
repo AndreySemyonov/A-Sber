@@ -1,0 +1,105 @@
+image: eclipse-temurin:19.0.1_10-jdk-jammy
+
+test-EurekaServer:
+  image: maven:latest
+  stage: test
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd EurekaServer
+    - mvn -version
+    - mvn test
+    - echo "EurekaServer test done"
+
+test-ApiGateway:
+  image: maven:latest
+  stage: test
+  needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd ApiGateway
+    - mvn -version
+    - mvn test
+    - echo "ApiGateway test done"
+
+test-UserService:
+  image: maven:latest
+  stage: test
+  needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd UserService
+    - mvn -version
+    - mvn test
+    - echo "UserService test done"
+
+test-DepositService:
+  image: maven:latest
+  stage: test
+  needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd DepositService
+    - mvn -version
+    - mvn test
+    - echo "DepositService test done"
+
+test-CreditService:
+  image: maven:latest
+  stage: test
+  needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd CreditService
+    - mvn -version
+    - mvn test
+    - echo "CreditService test done"
+ 
+test-InfoService:
+  image: maven:latest
+  stage: test
+  needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd InfoService
+    - mvn -version
+    - mvn test
+    - echo "InfoService test done"
+
+test-MoneyTransferService:
+  image: maven:latest
+  stage: test
+  needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  allow_failure: true
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd MoneyTransferService
+    - mvn -version
+    - mvn test
+    - echo "MoneyTransferService test done"

@@ -1,0 +1,246 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1665571526393-1
+      author: init-database
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: db_contacts_pkey
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+              - column:
+                  name: id_client
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sms_notification_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: push_notification_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: true
+              - column:
+                  name: email_subscription_enabled
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  constraints:
+                    nullable: false
+                    unique: true
+                  name: mobile_phone
+                  type: VARCHAR(255)
+            tableName: db_contacts
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: db_passport_data_pkey
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+              - column:
+                  name: id_client
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  constraints:
+                    nullable: false
+                  name: identification_passport_number
+                  type: VARCHAR(255)
+              - column:
+                  name: issuance_date
+                  type: date
+              - column:
+                  name: expiry_date
+                  type: date
+              - column:
+                  name: nationality
+                  type: VARCHAR(255)
+              - column:
+                  name: birth_date
+                  type: date
+            tableName: db_passport_data
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: db_user_profile_pkey
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+              - column:
+                  name: id_client
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_encoded
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password_salt
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: security_question
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: security_answer
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: date_app_registration
+                  type: TIMESTAMP WITHOUT TIME ZONE
+            tableName: db_user_profile
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: db_verification_pkey
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+              - column:
+                  name: id_contact
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sms_verification_code_6
+                  type: CHAR(6)
+              - column:
+                  name: sms_code_expiration
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: block_expiration
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: verification_attempts
+                  type: SMALLINT
+                  defaultValueNumeric: 0
+            tableName: db_verification
+        - addUniqueConstraint:
+            columnNames: id_client
+            constraintName: db_contacts_unique_client
+            tableName: db_contacts
+        - addUniqueConstraint:
+            columnNames: id_client
+            constraintName: db_user_profile_unique_client
+            tableName: db_user_profile
+        - addUniqueConstraint:
+            columnNames: id_contact
+            constraintName: db_verification_unique_contacts
+            tableName: db_verification
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: db_client_pkey
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: first_name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: last_name
+                  type: VARCHAR(255)
+              - column:
+                  name: sur_name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: country_of_residence
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: date_accession
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: client_status
+                  type: VARCHAR(255)
+            tableName: db_client
+        - addForeignKeyConstraint:
+            baseColumnNames: id_client
+            baseTableName: db_contacts
+            constraintName: contacts_client_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: db_client
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: id_client
+            baseTableName: db_user_profile
+            constraintName: user_profile_client_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: db_client
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: id_client
+            baseTableName: db_passport_data
+            constraintName: passport_data_client_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: db_client
+            validate: true
+        - addForeignKeyConstraint:
+            baseColumnNames: id_contact
+            baseTableName: db_verification
+            constraintName: verification_contact_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: db_contacts
+            validate: true

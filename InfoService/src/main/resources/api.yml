@@ -1,0 +1,119 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Info service
+servers:
+  - url: http://localhost:8086
+tags:
+  - name: exchange-rate-controller
+    description: Exchange rate controller
+paths:
+  /exchange-rates:
+    post:
+      tags:
+        - exchange-rate-controller
+      summary: Endpoint for getting exchange rate for currency
+      operationId: getExchangeRate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currencyCode:
+                  type: string
+                  example: USD
+                  description: Currency code(3 letters)
+      responses:
+        '200':
+          description: Returns existing currency rate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExchangeRateDto"
+        '422':
+          description: 422 error if exchange rate for given currency is not existing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorInfo"
+    get:
+      tags:
+        - exchange-rate-controller
+      summary: Endpoint for getting all exchange rates
+      operationId: getExchangeRates
+      responses:
+        '200':
+          description: Returns all currency rates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExchangeRateDto"
+        '422':
+          description: 422 error if no exchange rates are in db
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorInfo"
+components:
+  schemas:
+    errorInfo:
+      type: object
+      description: Error dto
+      properties:
+        url:
+          type: string
+          example: localhost:8086/exchange-rates
+          description: On which URL the error was thrown
+        type:
+          type: string
+          example: NOT_FOUND
+          description: Error type
+        exceptionMsg:
+          type: string
+          example: Entity was not found
+          description: Error message
+        timeStamp:
+          type: string
+          format: date-time
+          example: 2022-12-20T17:50:05.037241
+          description: Error throw timestamp
+    ExchangeRateDto:
+      type: object
+      description: Exchange rate DTO
+      required:
+        - updateAt
+        - name
+        - buyingRate
+        - sellingRate
+        - currencyCode
+        - unit
+      properties:
+        updateAt:
+          type: string
+          format: date-time
+          example: 2022-12-20T17:50:05.037241
+          description: When exchange rate was last updated
+        name:
+          type: string
+          example: USD
+          description: Currency name
+        buyingRate:
+          type: string
+          example: 65
+          description: Currency buying rate
+        sellingRate:
+          type: string
+          example: 70
+          description: Currency selling rate
+        currencyCode:
+          type: string
+          example: USD
+          description: Currency code(3 letters)
+        unit:
+          type: integer
+          example: 1
+          description: Currency unit

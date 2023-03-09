@@ -1,0 +1,24 @@
+image: eclipse-temurin:19.0.1_10-jdk-jammy
+
+build-logging-filter-spring-boot-starter:
+  allow_failure: true
+  image: maven:latest
+  stage: build
+  tags:
+    - docker-runner-1
+  script:
+    - cd logging-filter-spring-boot-starter
+    # - mvn clean install --settings=settings.xml
+    - mvn deploy -s settings.xml
+  rules:
+    # - if: $CI_COMMIT_BRANCH == "develop"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - logging-filter-spring-boot-starter/**/*
+        - logging-filter-spring-boot-starter/*
+        - CI_CD-Templates/trigger/*
+  artifacts:
+    name: "logging-filter-spring-boot-starter.jar"    
+    paths:
+      - ./
+    expire_in: 1 day

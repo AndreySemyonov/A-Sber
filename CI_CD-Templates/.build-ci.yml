@@ -1,0 +1,144 @@
+image: eclipse-temurin:19.0.1_10-jdk-jammy
+
+build-EurekaServer:
+  image: maven:latest
+  stage: build
+  # needs: [test-EurekaServer]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd EurekaServer
+    - mvn -version
+    # - mvn clean package -e -DskipTests #skip tests
+    - mvn package -e -DskipTests #skip tests
+    - echo "EurekaServer compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      
+  # dependencies:
+  #   - test-EurekaServer
+
+build-ApiGateway:
+  image: maven:latest
+  stage: build
+  needs: [build-EurekaServer]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd ApiGateway
+    - mvn -version
+    - mvn package -e -DskipTests #skip tests
+    - echo "ApiGateway compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      
+
+build-UserService:
+  image: maven:latest
+  stage: build
+  needs: [build-ApiGateway]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd UserService
+    - mvn -version
+    - mvn package -e -DskipTests #skip tests
+    - echo "UserService compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      
+
+build-DepositService:
+  image: maven:latest
+  stage: build
+  needs: [build-ApiGateway]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd DepositService
+    - mvn -version
+    - mvn package -e -DskipTests #skip tests
+    - echo "DepositService compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      
+
+build-CreditService:
+  image: maven:latest
+  stage: build
+  needs: [build-ApiGateway]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd CreditService
+    - mvn -version
+    - mvn package -e -DskipTests #skip tests
+    - echo "CreditService compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      
+
+build-InfoService:
+  image: maven:latest
+  stage: build
+  needs: [build-ApiGateway]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd InfoService
+    - mvn -version
+    - mvn package -e -DskipTests #skip tests
+    - echo "InfoService compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      
+
+build-MoneyTransferService:
+  image: maven:latest
+  stage: build
+  needs: [build-ApiGateway]
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd MoneyTransferService
+    - mvn -version
+    - mvn package -e -DskipTests #skip tests
+    - echo "MoneyTransferService compile done"
+    - pwd
+    - ls -al ./target
+  artifacts:
+    paths:
+      - ./
+    expire_in: 2 hrs      

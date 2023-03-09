@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1667567633061-1
+      author: init-database
+      changes:
+        - addColumn:
+            tableName: transfer_type
+            columns:
+            - column:
+                constraints:
+                  nullable: true
+                name: commission_fix
+                type: DECIMAL(19,4)
+        - addColumn:
+            tableName: transfer_type
+            columns:
+            - column:
+                constraints:
+                  nullable: false
+                name: currency_from
+                type: VARCHAR(30)
+        -  dropNotNullConstraint:
+             tableName: transfer_type
+             columnName: commission_percent

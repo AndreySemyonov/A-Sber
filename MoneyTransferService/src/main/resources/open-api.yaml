@@ -1,0 +1,559 @@
+openapi: 3.0.3
+info:
+  title: MoneyTransfer Service Api Documentation
+  description: MoneyTransfer Service Api Documentation
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  version: '1.0'
+servers:
+  - url: http://localhost:8087
+    description: Inferred Url
+tags:
+  - name: basic-error-controller
+    description: Basic Error Controller
+  - name: commission-controller
+    description: Commission Controller
+  - name: info-controller
+    description: Check input information before transfer
+  - name: transfer-controller
+    description: Transfer Controller
+  - name: transfer-details-controller
+    description: Transfer Details Controller
+  - name: operations-history-controller
+    description: Transfer operations history
+paths:
+  /api/v1/commission:
+    get:
+      tags:
+        - commission-controller
+      summary: Get commission value
+      operationId: getCommissionResponse
+      parameters:
+        - name: typeName
+          in: query
+          description: Name of transfer type
+          required: true
+          style: form
+          schema:
+            type: string
+          example: 'card'
+        - name: currencyCode
+          in: query
+          description: Currency code
+          required: true
+          style: form
+          schema:
+            type: string
+          example: 'RUB'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferTypeResponseDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/info/check-card:
+    get:
+      tags:
+        - info-controller
+      summary: Check is a card number valid
+      operationId: checkCardNumber
+      parameters:
+        - name: cardNumber
+          in: query
+          description: cardNumber
+          required: true
+          style: form
+          schema:
+            type: string
+          example: '408181057000019'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNumberDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/payments/new:
+    post:
+      tags:
+        - transfer-controller
+      summary: newTransfer
+      operationId: newTransfer
+      parameters:
+        - name: clientId
+          in: query
+          description: Client id
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+          example: 'd3db02f6-5eb9-11ed-9b6a-0242ac120002'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequestDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponseDto'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /api/v1/payments/{transferId}/draft:
+    delete:
+      tags:
+        - transfer-controller
+      summary: changeTransferStatusToDeleted
+      operationId: changeTransferStatusToDeleted
+      parameters:
+        - name: transferId
+          in: path
+          description: Transfer id
+          required: true
+          style: simple
+          schema:
+            type: string
+          example: '5555555'
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /payments/{transferId}/status:
+    patch:
+      tags:
+        - transfer-details-controller
+      summary: Update transfer status
+      operationId: updateTransferStatus
+      parameters:
+        - name: transferId
+          in: path
+          description: Transfer id
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int64
+          example: '5555555'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferStatusDto'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferStatusDto'
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /api/v1/history:
+    get:
+      tags:
+        - operations-history-controller
+      summary: Show history of transfer operations
+      operationId: showOperationsHistory
+      parameters:
+        - name: clientId
+          in: query
+          required: true
+          style: form
+          description: clientId
+          schema:
+            type: string
+          example: '798060ff-ed9b-4745-857c-a7a2f4a2e3a2'
+        - name: page
+          in: query
+          required: true
+          description: Page number
+          schema:
+            type: integer
+          example: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationsHistoryDtoWithPagination'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+  /payments/{transferId}/favorites:
+    patch:
+      tags:
+        - transfer-controller
+      summary: Change IsFavourite Status
+      operationId: changeIsFavouriteStatus
+      parameters:
+        - name: transferId
+          in: path
+          description: Transfer id
+          required: true
+          style: simple
+          schema:
+            type: integer
+            format: int64
+          example: '5555555'
+        - name: isFavourite
+          in: query
+          description: is Favourite
+          required: true
+          style: simple
+          schema:
+            type: boolean
+          example: 'false'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferIsFavouriteDto'
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: 422 error if transfer details with given transfer id is not existing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorInfo"
+
+components:
+  schemas:
+    errorInfo:
+      type: object
+      description: Error dto
+      properties:
+        url:
+          type: string
+          example: localhost:8087/api/v1/commission
+          description: On which URL the error was thrown
+        type:
+          type: string
+          example: NOT_FOUND
+          description: Error type
+        exceptionMsg:
+          type: string
+          example: Entity was not found
+          description: Error message
+        timeStamp:
+          type: string
+          format: date-time
+          example: 2022-12-20T17:50:05.037241
+          description: Error throw timestamp
+    AccountNumberDto:
+      title: AccountNumberDto
+      required:
+        - accountNumber
+      type: object
+      properties:
+        accountNumber:
+          type: string
+          example: 'accountnumber1'
+          description: Account number
+    TransferIsFavouriteDto:
+      title: TransferIsFavouriteDto
+      type: object
+      properties:
+        isFavourite:
+          type: boolean
+          description: isFavourite
+          example: false
+    TransferRequestDto:
+      title: TransferRequestDto
+      required:
+        - cardNumber
+        - remitterCardNumber
+        - sum
+        - sumCommission
+        - transferTypeId
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          description: Card number
+          example: '408181057000019'
+        currencyExchange:
+          type: number
+          format: bigdecimal
+          description: Currency exchange
+          example: 60
+        isFavourite:
+          type: boolean
+          description: isFavourite
+          example: true
+        mobilePhone:
+          type: integer
+          format: int64
+          description: Mobile phone number
+          example: 79553336667
+        name:
+          type: string
+          description: Name
+          example: 'Nick'
+        payeeAccountNumber:
+          type: string
+          description: Receiver account number
+          example: 'account1'
+        payeeCardNumber:
+          type: string
+          description: Receiver card number
+          example: '408181057000014'
+        periodicity:
+          type: integer
+          format: int32
+          description: Frequency of regular payment
+          example: 12
+        purpose:
+          type: string
+          description: Purpose of transfer
+          example: 'eat'
+        remitterCardNumber:
+          type: string
+          description: Remitter card number
+          example: '408181057000012'
+        startDate:
+          type: string
+          format: date
+          description: Date of transfer creation
+          example: '02.02.2022'
+        sum:
+          type: number
+          format: bigdecimal
+          description: Sum of transfer
+          example: 1000
+        sumCommission:
+          type: number
+          format: bigdecimal
+          description: Comission of the sum
+          example: 1
+        transferTypeId:
+          type: integer
+          format: int64
+          description: Type id of transfer
+          example: 1111111L
+    TransferResponseDto:
+      title: TransferResponseDto
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date
+          description: Date of transfer creation
+          example: '02.02.2022'
+        id:
+          type: integer
+          format: int64
+          description: Id
+          example: 1111L
+        status:
+          $ref: '#/components/schemas/TransferStatus'
+    TransferStatusDto:
+      title: TransferStatusDto
+      required:
+        - status
+        - transferId
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/TransferStatus'
+        transferId:
+          type: string
+          description: Transfer id
+          example: 1111111L
+    TransferTypeResponseDto:
+      title: TransferTypeResponseDto
+      required:
+        - maxCommission
+        - maxTransferSum
+        - minCommission
+        - minTransferSum
+        - transferTypeId
+      type: object
+      properties:
+        commissionFix:
+          type: number
+          format: bigdecimal
+          description: Fixed commission amount
+          example: 10
+        commissionPercent:
+          type: number
+          format: bigdecimal
+          description: Percent of coission
+          example: 10
+        maxCommission:
+          type: integer
+          format: int32
+          description: Maximal commission
+          example: 10
+        maxTransferSum:
+          type: number
+          format: bigdecimal
+          description: Max sum of transfer
+          example: 99999
+        minCommission:
+          type: integer
+          format: int32
+          description: Minimal comission
+          example: 10
+        minTransferSum:
+          type: number
+          format: bigdecimal
+          description: Minimal sum of transfer
+          example: 10
+        transferTypeId:
+          type: integer
+          format: int64
+          description: Type id of transfer
+          example: 123L
+    TransferDetailsDto:
+      title: TransferDetailsDto
+      required:
+        - id
+        - created_at
+        - purpose
+        - sum
+        - completed_at
+        - status
+        - type_name
+        - currency_code
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Id of transferDetails entry
+          example: 11111L
+        created_at:
+          type: string
+          format: date
+          description: Date of transfer creation
+          example: '20.01.2023'
+        purpose:
+          type: string
+          description: Purpose of transfer
+          example: 'eat'
+        sum:
+          type: number
+          format: bigdecimal
+          description: Sum of transfer
+          example: 1000
+        completed_at:
+          type: string
+          format: date
+          description: Date of transfer completion
+          example: '20.01.2033'
+        status:
+          $ref: '#/components/schemas/TransferStatus'
+        type_name:
+          type: string
+          description: Name of transfer type
+          example: 'card'
+        currency_code:
+          $ref: '#/components/schemas/CurrencyCode'
+    CurrencyCode:
+      type: string
+      enum:
+        - EUR
+        - RUB
+        - USD
+      description: Currency code
+    OperationsHistoryDtoWithPagination:
+      required:
+        - currentPage
+        - totalPages
+        - operations
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          example: 0
+          description: Current pagination page
+        totalPages:
+          type: integer
+          example: 20
+          description: Total number of pages
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferDetailsDto'
+    TransferDetailsDtoArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/TransferDetailsDto'
+    TransferStatus:
+      type: object
+      enum:
+        - DRAFT
+        - EXECUTED
+        - IN_PROGRESS
+        - REJECTED
+      description: Status of transfer
+    ExchangeRateDto:
+      title: ExchangeRateDto
+      required:
+        - buyingRate
+        - sellingRate
+        - currencyCode
+        - unit
+      type: object
+      properties:
+        buyingRate:
+          type: string
+          example: '0.7080745341614907'
+          description: Buying rate
+        sellingRate:
+          type: string
+          example: '322.0000'
+          description: Selling rate
+        currencyCode:
+          type: string
+          example: 'USD'
+          description: Currency code
+        unit:
+          type: integer
+          format: int32
+          description: Exchange unit
+          example: 1

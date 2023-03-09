@@ -1,0 +1,161 @@
+# MicroServices names & ports:
+# EurekaServer    - 8761,
+# ApiGateway      - 8083,
+# UserService     - 8081,
+# DepositService  - 8082,
+# CreditService   - 8085,
+# InfoService     - 8086,
+
+deploy-EurekaServer:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8761
+    SRVC_NAME: EurekaServer
+    ARIF_FLDR: EurekaServerBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-EurekaServer]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --network="host" --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-EurekaServer
+
+deploy-ApiGateway:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8083
+    SRVC_NAME: ApiGateway
+    ARIF_FLDR: ApiGatewayBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-ApiGateway]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --network="host" --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-ApiGateway
+
+deploy-UserService:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8081
+    SRVC_NAME: UserService
+    ARIF_FLDR: UserServiceBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-UserService]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --network="host" --add-host localhost:172.17.1.33 --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-UserService
+
+deploy-DepositService:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8082
+    SRVC_NAME: DepositService
+    ARIF_FLDR: DepositServiceBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-DepositService]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --net=host --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-DepositService
+
+deploy-CreditService:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8085
+    SRVC_NAME: CreditService
+    ARIF_FLDR: CreditServiceBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-CreditService]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --net=host --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-CreditService
+
+deploy-InfoService:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8086
+    SRVC_NAME: InfoService
+    ARIF_FLDR: InfoServiceBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-InfoService]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --net=host --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-InfoService
+
+deploy-MoneyTransferService:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8186
+    SRVC_NAME: MoneyTransferService
+    ARIF_FLDR: MoneyTransferServiceBuild
+  image: docker:latest
+  stage: deploy
+  needs: [build-MoneyTransferService]
+  tags:
+    - shell-runner-1
+  # when: manual
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --net=host --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-MoneyTransferService

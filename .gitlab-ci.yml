@@ -1,0 +1,43 @@
+# ===MicroServices names & ports:
+# EurekaServer          - 8761,
+# ApiGateway            - 8083,
+# UserService           - 8081,
+# DepositService        - 8082,
+# CreditService         - 8085,
+# InfoService           - 8086,
+# MoneyTransferService  - 8186,
+# AbsService            - 8087.
+# ===Other services & ports:
+# Postgres        - 5432,
+# Kafka Broker    - 9092,
+# ZooKeeper       - 2181, 2888, 3888
+# Redis           - 6379
+
+stages:
+# - docker-compose-start
+#  - test
+ - build
+ - deploy
+ - test
+ - deploy-on-test-srv
+
+include:
+  # - .test-ci.yml
+  # - .build-ci.yml
+  # - .deploy-ci.yml
+  - local: CI_CD-Templates/.AbsService-ci.yml
+  - local: CI_CD-Templates/.EurekaServer-ci.yml
+  - local: CI_CD-Templates/.ApiGateway-ci.yml
+  - local: CI_CD-Templates/.UserService-ci.yml
+  - local: CI_CD-Templates/.InfoService-ci.yml
+  - local: CI_CD-Templates/.CreditService-ci.yml
+  - local: CI_CD-Templates/.DepositService-ci.yml
+  - local: CI_CD-Templates/.MoneyTransferService-ci.yml
+  - local: CI_CD-Templates/.logging-filter-spring-boot-starter-ci.yml
+
+#docker-compose-start:
+# stage: docker-compose-start
+# tags:
+#  - shell-runner-1
+# script:
+#  - docker-compose -f docker-compose.yml up --force-recreate -d

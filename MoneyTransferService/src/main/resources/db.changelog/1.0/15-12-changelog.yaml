@@ -1,0 +1,337 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1667567633061-1
+      author: init-database
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createSequence:
+            dataType: BIGINT
+            incrementBy: 1
+            minValue: 1
+            schemaName: public
+            sequenceName: hibernate_sequence
+            startValue: 1
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_transfer_system
+                  name: transfer_system_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_system_name
+                  type: VARCHAR(255)
+            tableName: transfer_system
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_phone_code
+                  name: phone_code
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: country_name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: available
+                  type: BOOLEAN
+              - column:
+                  constraints:
+                    nullable: false
+                  name: old_code
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: update_at
+                  type: DATE
+            tableName: phone_code
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_transfer_type
+                  name: transfer_type_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_type_name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: min_transfer_sum
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: max_transfer_sum
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: min_commission
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: max_commission
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: commission_percent
+                  type: DECIMAL(19,4)
+            tableName: transfer_type
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_transfer_details
+                  name: transfer_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: sender_id
+                  type: UUID
+              - column:
+                  name: receiver_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_type_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_sum
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: currency_from
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: currency_to
+                  type: VARCHAR(30)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: exchange_rate
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_exch_sum
+                  type: DECIMAL(19,4)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: commission
+                  type: INTEGER
+              - column:
+                  name: message
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_date
+                  type: DATE
+              - column:
+                  name: transfer_system_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_favourite
+                  type: BOOLEAN
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_auto
+                  type: BOOLEAN
+              - column:
+                  name: periodicity
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: start_date
+                  type: DATE
+              - column:
+                  constraints:
+                  name: expiration_date
+                  type: DATE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: purpose_of_transfer
+                  type: VARCHAR(255)
+              - column:
+                  name: authorization_code
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_deleted
+                  type: BOOLEAN
+            tableName: transfer_details
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_phone_transfer
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_details_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: sender_card_number
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: receiver_card_number
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: receiver_phone
+                  type: BIGINT
+              - column:
+                  name: phone_code
+                  type: INTEGER
+            tableName: phone_transfer
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_card_transfer
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: transfer_details_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: sender_card_number
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: receiver_card_number
+                  type: VARCHAR(50)
+            tableName: card_transfer
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_data_for_international
+                  name: data_int_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: card_transfer_id
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: CVV
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: receiver_name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: receiver_surname
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: expire_date
+                  type: DATE
+            tableName: data_for_international
+        - addForeignKeyConstraint:
+            baseColumnNames: transfer_details_id
+            baseTableName: phone_transfer
+            constraintName: fk_phone_transfer_on_transfer_details
+            referencedColumnNames: transfer_id
+            referencedTableName: transfer_details
+        - addForeignKeyConstraint:
+            baseColumnNames: phone_code
+            baseTableName: phone_transfer
+            constraintName: fk_phone_transfer_on_phone_code
+            referencedColumnNames: phone_code
+            referencedTableName: phone_code
+        - addForeignKeyConstraint:
+            baseColumnNames: transfer_type_id
+            baseTableName: transfer_details
+            constraintName: fk_transfer_details_on_transfer_type
+            referencedColumnNames: transfer_type_id
+            referencedTableName: transfer_type
+        - addForeignKeyConstraint:
+            baseColumnNames: transfer_system_id
+            baseTableName: transfer_details
+            constraintName: fk_transfer_details_on_transfer_system
+            referencedColumnNames: transfer_system_id
+            referencedTableName: transfer_system
+        - addForeignKeyConstraint:
+            baseColumnNames: transfer_details_id
+            baseTableName: card_transfer
+            constraintName: fk_card_transfer_on_transfer_details
+            referencedColumnNames: transfer_id
+            referencedTableName: transfer_details
+        - addForeignKeyConstraint:
+            baseColumnNames: card_transfer_id
+            baseTableName: data_for_international
+            constraintName: fk_data_for_international_on_card_transfer
+            referencedColumnNames: id
+            referencedTableName: card_transfer

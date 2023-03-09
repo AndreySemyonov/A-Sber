@@ -1,0 +1,1060 @@
+openapi: 3.0.3
+info:
+  title: Api Documentation
+  description: Api Documentation
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  version: '1.0'
+servers:
+  - url: http://localhost:8082
+    description: Inferred Url
+tags:
+  - name: agreement-controller
+    description: Agreement Controller
+  - name: card-controller
+    description: Card Controller
+  - name: deposit-controller
+    description: Deposit Controller
+  - name: info-controller
+    description: Info Controller
+paths:
+  /api/v1/deposit-orders/new:
+    post:
+      tags:
+        - agreement-controller
+      summary: Create a new deposit order
+      operationId: createNewDepositAgreement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositAgreementDto'
+      responses:
+        '201':
+          description: Created
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposits/{agreementId}/auto-renewal:
+    patch:
+      tags:
+        - agreement-controller
+      summary: Change agreement auto renewal status
+      operationId: changeAutoRenewalStatus
+      parameters:
+        - name: agreementId
+          in: path
+          description: agreementId
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: clientId
+          in: query
+          description: clientId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+        - name: autoRenewal
+          in: query
+          description: autoRenewal
+          required: true
+          style: form
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposits/{agreementId}/revocation:
+    patch:
+      tags:
+        - agreement-controller
+      summary: Revoke a deposit
+      operationId: revokeDeposit
+      parameters:
+        - name: agreementId
+          in: path
+          description: agreementId
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountNumberDto'
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/account-number:
+    get:
+      tags:
+        - card-controller
+      summary: Get account number by credit card number
+      operationId: getAccountNumber
+      parameters:
+        - name: cardNumber
+          in: query
+          description: cardNumber
+          required: true
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountNumberDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/change-card-status:
+    patch:
+      tags:
+        - card-controller
+      summary: Change the deposit card status
+      operationId: changeCardStatus
+      parameters:
+        - name: cardId
+          in: query
+          description: cardId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardStatusDto'
+      responses:
+        '200':
+          description: OK
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposit-card-orders/new:
+    post:
+      tags:
+        - card-controller
+      summary: Create a deposit card order
+      operationId: createNewCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCardRequestDto'
+      responses:
+        '201':
+          description: Created
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/accounts:
+    get:
+      tags:
+        - deposit-controller
+      summary: Get client's accounts by client id
+      operationId: getAccounts
+      parameters:
+        - name: clientId
+          in: query
+          description: clientId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountResponseDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposit-card:
+    get:
+      tags:
+        - deposit-controller
+      summary: Get client's deposit cards by client id
+      operationId: getClientCards
+      parameters:
+        - name: clientId
+          in: query
+          description: clientId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                uniqueItems: true
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientCardsResponseDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposits:
+    get:
+      tags:
+        - deposit-controller
+      summary: Get client's deposits by client id
+      operationId: getDeposits
+      parameters:
+        - name: clientId
+          in: query
+          description: clientId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                uniqueItems: true
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientDepositsResponseDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposits-count:
+    get:
+      tags:
+        - deposit-controller
+      summary: Get the number of client deposits
+      operationId: getDepositsCount
+      parameters:
+        - name: clientId
+          in: query
+          description: clientId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: integer
+                format: int32
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/deposits/{agreementId}:
+    get:
+      tags:
+        - deposit-controller
+      summary: Get the client deposit by agreement id
+      operationId: getDeposit
+      parameters:
+        - name: agreementId
+          in: path
+          description: agreementId
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: clientId
+          in: query
+          description: clientId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+        - name: cardId
+          in: query
+          description: cardId
+          required: true
+          style: form
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ClientDepositResponseDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/card-products:
+    get:
+      tags:
+        - info-controller
+      summary: Get the list of active card products
+      operationId: getCardProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardProductResponseDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+  /api/v1/products:
+    get:
+      tags:
+        - info-controller
+      summary: Get the list of active deposit products
+      operationId: getProducts
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponseDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - Authorization: []
+components:
+  schemas:
+    Error:
+      type: object
+      description: Error dto
+      properties:
+        url:
+          type: string
+          example: localhost:8082/api/v1/products
+          description: On which URL the error was thrown
+        type:
+          type: string
+          example: NOT_FOUND
+          description: Error type
+        exceptionMsg:
+          type: string
+          example: Entity was not found
+          description: Error message
+        timeStamp:
+          type: string
+          format: date-time
+          example: 2022-12-20T17:50:05.037241
+          description: Error throw timestamp
+    AccountNumberDto:
+      title: AccountNumberDto
+      required:
+        - accountNumber
+      type: object
+      properties:
+        accountNumber:
+          type: string
+          example: 'accountNumber1'
+          description: Account number
+    AccountResponseDto:
+      title: AccountResponseDto
+      required:
+        - accountNumber
+        - closeDate
+        - currencyCode
+        - currentBalance
+        - openDate
+        - salaryProject
+      type: object
+      properties:
+        accountNumber:
+          type: string
+          example: 'accountNumber1'
+          description: Account number
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+        currentBalance:
+          type: number
+          format: bigdecimal
+          example: 1000
+          description: Account current balance
+        openDate:
+          type: string
+          format: date
+          example: '2022-01-01'
+          description: Account open date
+        closeDate:
+          type: string
+          format: date
+          example: '2022-01-01'
+          description: Account close date
+        salaryProject:
+          type: string
+          example: 'nameOfsalaryProject'
+          description: Account salary project
+        blockedSum:
+          type: number
+          format: bigdecimal
+          example: 1000
+          description: Account blocked sum
+    AgreementForClientDeposits:
+      title: AgreementForClientDeposits
+      required:
+        - agreementId
+        - agreementNumber
+        - currentBalance
+        - endDate
+        - startDate
+      type: object
+      properties:
+        agreementId:
+          type: string
+          format: uuid
+          description: Agreement id
+        agreementNumber:
+          type: string
+          example: 'agreementNumber1'
+          description: Agreement number
+        startDate:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: Agreement start date
+        endDate:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: Agreement end date
+        currentBalance:
+          type: number
+          format: bigdecimal
+          example: 1000
+          description: Account current balance
+        product:
+          $ref: '#/components/schemas/ProductForClientDeposits'
+    CardForClientCards:
+      title: CardForClientCards
+      required:
+        - id
+        - cardNumber
+        - status
+        - expirationDate
+        - holderName
+        - isDefault
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Card id
+        cardNumber:
+          type: string
+          example: 'cardNumber1'
+          description: Card number
+        transactionLimit:
+          type: number
+          format: bigdecimal
+          description: Card transaction limit
+        cardStatus:
+          $ref: '#/components/schemas/CardStatus'
+        expirationDate:
+          type: string
+          format: date
+          example: '2022-01-01'
+          description: Card expiration date
+        holderName:
+          type: string
+          example: 'holderName1'
+          description: Card holderName
+        digitalWallet:
+          $ref: '#/components/schemas/DigitalWallet'
+        isDefault:
+          type: boolean
+          example: 'false'
+          description: Card isDefault
+        cardProductId:
+          $ref: '#/components/schemas/CardProductResponseDto'
+    CardForClientDeposits:
+      title: CardForClientDeposits
+      required:
+        - cardId
+        - cardNumber
+      type: object
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          description: Card id
+        cardNumber:
+          type: string
+          example: 'cardNumber1'
+          description: Card number
+    CardProductResponseDto:
+      title: CardProductResponseDto
+      required:
+        - id
+        - cardName
+        - premiumStatus
+        - paymentSystem
+        - isVirtual
+        - currencyCode
+        - productPrice
+        - servicePrice
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Card product id
+        cardName:
+          type: string
+          example: 'cardName1'
+          description: Card product name
+        premiumStatus:
+          $ref: '#/components/schemas/PremiumStatus'
+        paymentSystem:
+          $ref: '#/components/schemas/PaymentSystem'
+        cashback:
+          type: number
+          format: bigdecimal
+          description: Card product cashback
+        coBrand:
+          $ref: '#/components/schemas/CoBrand'
+        isVirtual:
+          type: boolean
+          example: 'false'
+          description: Card product isVirtual
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+        productPrice:
+          type: number
+          format: bigdecimal
+          description: Card product price
+        servicePrice:
+          type: number
+          format: bigdecimal
+          description: Card product service price
+        cardDuration:
+          type: integer
+          format: int32
+          description: Card product card duration
+    CardStatusDto:
+      title: CardStatusDto
+      required:
+        - cardNumber
+        - status
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          example: 'cardNumber1'
+          description: Card number
+        status:
+          $ref: '#/components/schemas/CardStatus'
+    ClientCardsResponseDto:
+      title: ClientCardsResponseDto
+      required:
+        - accountNumber
+        - currencyCode
+        - currentBalance
+      type: object
+      properties:
+        accountNumber:
+          type: string
+          example: 'accountNumber1'
+          description: Account number
+        currentBalance:
+          type: number
+          format: bigdecimal
+          example: 1000
+          description: Account current balance
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardForClientCards'
+    ClientDepositResponseDto:
+      title: ClientDepositResponseDto
+      required:
+        - autoRenewal
+        - cardNumber
+        - currencyCode
+        - currentBalance
+        - endDate
+        - interestRate
+        - isCapitalization
+        - isRevocable
+        - name
+        - schemaName
+        - startDate
+      type: object
+      properties:
+        cardNumber:
+          type: string
+          example: 'cardNumber1'
+          description: Card number
+        startDate:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: Agreement start date
+        endDate:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+          description: Agreement end date
+        currentBalance:
+          type: number
+          format: bigdecimal
+          example: 1000
+          description: Account current balance
+        interestRate:
+          type: number
+          format: bigdecimal
+          example: 1000
+          description: Agreement interest rate
+        autoRenewal:
+          type: boolean
+          example: 'false'
+          description: Agreement autoRenewal
+        name:
+          type: string
+          example: 'ProductName1'
+          description: Product name
+        schemaName:
+          $ref: '#/components/schemas/SchemaName'
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+        isCapitalization:
+          type: boolean
+          example: 'false'
+          description: Product isCapitalization
+        isRevocable:
+          type: boolean
+          example: 'false'
+          description: Product isRevocable
+    ClientDepositsResponseDto:
+      title: ClientDepositsResponseDto
+      required:
+        - accountNumber
+      type: object
+      properties:
+        accountNumber:
+          type: string
+          example: 'accountNumber1'
+          description: Account number
+        agreements:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/AgreementForClientDeposits'
+        cards:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/CardForClientDeposits'
+    DepositAgreementDto:
+      title: DepositAgreementDto
+      required:
+        - autoRenewal
+        - cardNumber
+        - durationMonths
+        - initialAmount
+        - interestRate
+        - productId
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int32
+          description: Product id
+        initialAmount:
+          type: number
+          format: bigdecimal
+          description: Agreement initialAmount
+        cardNumber:
+          type: string
+          example: 'cardNumber1'
+          description: Card number
+        autoRenewal:
+          type: boolean
+          example: 'false'
+          description: Agreement autoRenewal
+        interestRate:
+          type: number
+          format: bigdecimal
+          description: Agreement interestRate
+        durationMonths:
+          type: integer
+          format: int32
+          description: Duration months for calculating
+    AbsDepositAgreementMessageDto:
+      title: AbsDepositAgreementMessageDto
+      required:
+        - autoRenewal
+        - cardNumber
+        - startDate
+        - endDate
+        - initialAmount
+        - interestRate
+        - productId
+        - agreementNumber
+        - isActive
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int32
+          description: Product id
+        initialAmount:
+          type: number
+          format: bigdecimal
+          description: Agreement initialAmount
+        cardNumber:
+          type: string
+          example: 'cardNumber1'
+          description: Card number
+        autoRenewal:
+          type: boolean
+          example: 'false'
+          description: Agreement autoRenewal
+        interestRate:
+          type: number
+          format: bigdecimal
+          description: Agreement interestRate
+        startDate:
+          type: string
+          format: date-time
+          example: '2022-01-15 00:00:00+03'
+          description: Agreement start date
+        endDate:
+          type: string
+          format: date-time
+          example: '2022-01-15 00:00:00+03'
+          description: Agreement end date
+        agreementNumber:
+          type: string
+          example: '2023/2150/17/05839'
+          description: Agreement number
+        isActive:
+          type: boolean
+          example: 'false'
+          description: Agreement status
+    NewCardRequestDto:
+      title: NewCardRequestDto
+      required:
+        - accountNumber
+        - cardProductId
+        - digitalWallet
+        - expirationDate
+        - holderName
+        - transactionLimit
+      type: object
+      properties:
+        accountNumber:
+          maxLength: 20
+          minLength: 0
+          type: string
+          example: 'accountNumber1'
+          description: Account number
+        transactionLimit:
+          type: number
+          format: bigdecimal
+          description: Card transaction limit
+        expirationDate:
+          type: string
+          format: date
+          example: '2022-01-01'
+          description: Card expiration date
+        holderName:
+          maxLength: 50
+          minLength: 0
+          type: string
+          example: 'holderName1'
+          description: Card holderName
+        digitalWallet:
+          $ref: '#/components/schemas/DigitalWallet'
+        cardProductId:
+          type: integer
+          format: int32
+          description: Card product id
+    NewCardResponseDto:
+      title: NewCardResponseDto
+      required:
+        - accountNumber
+        - cardProductId
+        - digitalWallet
+        - expirationDate
+        - holderName
+        - transactionLimit
+        - cardNumber
+        - isDefault
+      type: object
+      properties:
+        accountNumber:
+          maxLength: 20
+          minLength: 0
+          type: string
+          example: 'accountNumber1'
+          description: Account number
+        transactionLimit:
+          type: number
+          format: bigdecimal
+          description: Card transaction limit
+        expirationDate:
+          type: string
+          format: date
+          example: '2022-01-01'
+          description: Card expiration date
+        holderName:
+          maxLength: 50
+          minLength: 0
+          type: string
+          example: 'holderName1'
+          description: Card holderName
+        digitalWallet:
+          $ref: '#/components/schemas/DigitalWallet'
+        cardProductId:
+          type: integer
+          format: int32
+          description: Card product id
+        cardNumber:
+          type: string
+          maxLength: 16
+          minLength: 16
+          description: Card number
+        isDefault:
+          type: boolean
+          example: 'false'
+    ProductForClientDeposits:
+      title: ProductForClientDeposits
+      required:
+        - productName
+        - currencyCode
+      type: object
+      properties:
+        productName:
+          type: string
+          example: 'productName'
+          description: Product name
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+    ProductResponseDto:
+      title: ProductResponseDto
+      required:
+        - amountMax
+        - amountMin
+        - currencyCode
+        - id
+        - isCapitalization
+        - isRevocable
+        - maxDurationMonths
+        - maxInterestRate
+        - minDurationMonths
+        - minInterestRate
+        - name
+        - schemaName
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Product id
+        name:
+          type: string
+          description: Product name
+        schemaName:
+          $ref: '#/components/schemas/SchemaName'
+        interestRateEarly:
+          type: number
+          format: bigdecimal
+          description: Product interest rate early
+        isCapitalization:
+          type: boolean
+          example: 'false'
+        amountMin:
+          type: number
+          format: bigdecimal
+          description: Product amount min
+        amountMax:
+          type: number
+          format: bigdecimal
+          description: Product amount max
+        currencyCode: 
+          $ref: '#/components/schemas/CurrencyCode'
+        isRevocable:
+          type: boolean
+          example: 'false'
+        minInterestRate:
+          type: number
+          format: int32
+          description: Product min interest rate
+        maxInterestRate:
+          type: number
+          format: int32
+          description: Product max interest rate
+        minDurationMonths:
+          type: integer
+          format: bigdecimal
+          description: Product min duration months
+        maxDurationMonths:
+          type: integer
+          format: bigdecimal
+          description: Product max duration months
+    
+    CardStatus:
+      type: string
+      enum:
+        - BLOCKED
+        - ACTIVE
+        - EXPIRED
+    CoBrand:
+      type: string
+      enum:
+        - AEROFLOT
+        - WORLDOFTANKS
+        - MAGNIT
+        - RUSRAILWAY
+        - AZBUKAVKUSA
+        - MTS
+    DigitalWallet:
+      type: string
+      enum: 
+        - APPLEPAY
+        - SAMSUNGPAY
+        - GOOGLEPAY
+        - YANDEXPAY
+        - MIRPAY
+    CurrencyCode:
+      type: string
+      enum:
+        - EUR
+        - RUB
+        - USD
+    PaymentSystem:
+      type: string
+      enum:
+        - VISA
+        - MASTERCARD
+        - MIR
+    PremiumStatus:
+      type: string
+      enum:
+        - CLASSIC
+        - GOLD
+        - PLATINUM
+        - BLACK
+        - INFINITE
+        - SIGNATURE
+        - WORLD
+        - DEBIT
+        - SOCIAL
+        - SUPREME
+    SchemaName:
+      type: string
+      enum: 
+        - FIXED
+        - RECCURING
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header

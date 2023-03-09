@@ -1,0 +1,506 @@
+databaseChangeLog:
+- changeSet:
+    id: 1669547766049-1
+    author: init-database
+    objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+    changes:
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_account
+                name: id
+                type: UUID
+            - column:
+                name: credit_id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: account_number
+                type: VARCHAR(30)
+            - column:
+                name: principal_debt
+                type: DECIMAL(19,4)
+            - column:
+                name: interest_debt
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: is_active
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: opening_date
+                type: DATE
+            - column:
+                name: closing_date
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: currency_code
+                type: VARCHAR(3)
+            - column:
+                name: outstanding_principal_debt
+                type: DECIMAL(19,4)
+            - column:
+                name: outstanding_interest_debt
+                type: DECIMAL(19,4)
+          tableName: account
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_agreement
+                name: id
+                type: UUID
+            - column:
+                name: credit_id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: agreement_number
+                type: VARCHAR(20)
+            - column:
+                constraints:
+                  nullable: false
+                name: agreement_date
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: termination_date
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: responsible_specialist
+                type: VARCHAR(20)
+            - column:
+                constraints:
+                  nullable: false
+                name: is_active
+                type: BOOLEAN
+          tableName: agreement
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_card
+                name: id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: card_number
+                type: VARCHAR(16)
+            - column:
+                name: account_id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: holder_name
+                type: VARCHAR(50)
+            - column:
+                constraints:
+                  nullable: false
+                name: expiration_date
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: payment_system
+                type: VARCHAR(255)
+            - column:
+                constraints:
+                  nullable: false
+                name: balance
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: status
+                type: VARCHAR(30)
+            - column:
+                constraints:
+                  nullable: false
+                name: transaction_limit
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: delivery_point
+                type: VARCHAR(30)
+            - column:
+                name: is_digital_wallet
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: is_virtual
+                type: BOOLEAN
+            - column:
+                name: co_brand
+                type: VARCHAR(30)
+          tableName: card
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_credit
+                name: id
+                type: UUID
+            - column:
+                name: order_id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: type
+                type: VARCHAR(30)
+            - column:
+                constraints:
+                  nullable: false
+                name: credit_limit
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: currency_code
+                type: VARCHAR(3)
+            - column:
+                constraints:
+                  nullable: false
+                name: interest_rate
+                type: DECIMAL(6,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: personal_guarantees
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: grace_period_months
+                type: INTEGER
+            - column:
+                constraints:
+                  nullable: false
+                name: status
+                type: VARCHAR(30)
+            - column:
+                name: late_payment_rate
+                type: DECIMAL(6,4)
+          tableName: credit
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_credit_order
+                name: id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: number
+                type: VARCHAR(20)
+            - column:
+                constraints:
+                  nullable: false
+                name: client_id
+                type: UUID
+            - column:
+                name: product_id
+                type: INTEGER
+            - column:
+                constraints:
+                  nullable: false
+                name: status
+                type: VARCHAR(30)
+            - column:
+                constraints:
+                  nullable: false
+                name: amount
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: grace_period_months
+                type: INT
+            - column:
+                constraints:
+                  nullable: false
+                name: creation_date
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: monthly_income
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: monthly_expenditure
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: employer_identification_number
+                type: VARCHAR(10)
+          tableName: credit_order
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_operation
+                name: id
+                type: UUID
+            - column:
+                name: account_id
+                type: UUID
+            - column:
+                name: operation_type_id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: sum
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: completed_at
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: details
+                type: VARCHAR(255)
+            - column:
+                constraints:
+                  nullable: false
+                name: currency_code
+                type: VARCHAR(3)
+          tableName: operation
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_operation_type
+                name: id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: type
+                type: VARCHAR(30)
+            - column:
+                constraints:
+                  nullable: false
+                name: is_debt
+                type: BOOLEAN
+          tableName: operation_type
+      - createTable:
+          columns:
+            - column:
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_payment_schedule
+                name: id
+                type: UUID
+            - column:
+                name: account_id
+                type: UUID
+            - column:
+                constraints:
+                  nullable: false
+                name: payment_date
+                type: DATE
+            - column:
+                constraints:
+                  nullable: false
+                name: principal
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: interest
+                type: DECIMAL(19,4)
+          tableName: payment_schedule
+      - createTable:
+          columns:
+            - column:
+                autoIncrement: true
+                constraints:
+                  nullable: false
+                  primaryKey: true
+                  primaryKeyName: pk_product
+                name: id
+                type: INT
+            - column:
+                constraints:
+                  nullable: false
+                name: name
+                type: VARCHAR(30)
+            - column:
+                constraints:
+                  nullable: false
+                name: min_sum
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: max_sum
+                type: DECIMAL(19,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: currency_code
+                type: VARCHAR(3)
+            - column:
+                constraints:
+                  nullable: false
+                name: min_interest_rate
+                type: DECIMAL(6,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: max_interest_rate
+                type: DECIMAL(6,4)
+            - column:
+                constraints:
+                  nullable: false
+                name: need_guarantees
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: delivery_in_cash
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: early_repayment
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: need_income_details
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: min_period_months
+                type: INTEGER
+            - column:
+                constraints:
+                  nullable: false
+                name: max_period_months
+                type: INTEGER
+            - column:
+                constraints:
+                  nullable: false
+                name: is_active
+                type: BOOLEAN
+            - column:
+                constraints:
+                  nullable: false
+                name: details
+                type: VARCHAR(255)
+            - column:
+                constraints:
+                  nullable: false
+                name: calculation_mode
+                type: VARCHAR(30)
+            - column:
+                constraints:
+                  nullable: false
+                name: grace_period_months
+                type: INTEGER
+            - column:
+                constraints:
+                  nullable: false
+                name: rate_is_adjustable
+                type: BOOLEAN
+            - column:
+                name: rate_base
+                type: VARCHAR(20)
+            - column:
+                name: rate_fix_part
+                type: DECIMAL(6,4)
+            - column:
+                name: increased_rate
+                type: DECIMAL(6,4)
+          tableName: product
+      - addForeignKeyConstraint:
+          baseColumnNames: credit_id
+          baseTableName: account
+          constraintName: fk_account_on_credit
+          referencedColumnNames: id
+          referencedTableName: credit
+      - addForeignKeyConstraint:
+          baseColumnNames: credit_id
+          baseTableName: agreement
+          constraintName: fk_agreement_on_credit
+          referencedColumnNames: id
+          referencedTableName: credit
+      - addForeignKeyConstraint:
+          baseColumnNames: account_id
+          baseTableName: card
+          constraintName: fk_card_on_account
+          referencedColumnNames: id
+          referencedTableName: account
+      - addForeignKeyConstraint:
+          baseColumnNames: order_id
+          baseTableName: credit
+          constraintName: fk_credit_on_credit_order
+          referencedColumnNames: id
+          referencedTableName: credit_order
+      - addForeignKeyConstraint:
+          baseColumnNames: product_id
+          baseTableName: credit_order
+          constraintName: fk_credit_order_on_product
+          referencedColumnNames: id
+          referencedTableName: product
+      - addForeignKeyConstraint:
+          baseColumnNames: account_id
+          baseTableName: operation
+          constraintName: fk_operation_on_account
+          referencedColumnNames: id
+          referencedTableName: account
+      - addForeignKeyConstraint:
+          baseColumnNames: operation_type_id
+          baseTableName: operation
+          constraintName: fk_operation_on_operation_type
+          referencedColumnNames: id
+          referencedTableName: operation_type
+      - addForeignKeyConstraint:
+          baseColumnNames: account_id
+          baseTableName: payment_schedule
+          constraintName: fk_payment_schedule_on_account
+          referencedColumnNames: id
+          referencedTableName: account
+      - sql:
+          endDelimiter: \nGO
+          splitStatements: true
+          sql: ALTER TABLE product ADD CONSTRAINT check_product CHECK (max_sum >= min_sum AND max_interest_rate >= min_interest_rate AND max_period_months >= min_period_months)

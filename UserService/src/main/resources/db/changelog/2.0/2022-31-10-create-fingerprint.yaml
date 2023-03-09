@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1665571526393-1
+      author: init-database
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: db_fingerprint_pkey
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+              - column:
+                  name: id_client
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fingerprint
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+            tableName: db_fingerprint
+        - addForeignKeyConstraint:
+            baseColumnNames: id_client
+            baseTableName: db_fingerprint
+            constraintName: fingerprint_client_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: db_client
+            validate: true

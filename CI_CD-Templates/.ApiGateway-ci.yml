@@ -1,0 +1,104 @@
+image: eclipse-temurin:19.0.1_10-jdk-jammy
+
+build-ApiGateway:
+  allow_failure: true
+  image: maven:latest
+  stage: build
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd ./ApiGateway
+    - mvn -version
+    # - mvn clean package -e -DskipTests #skip tests
+    - mvn package -e -DskipTests #skip tests
+    - echo "ApiGateway compile done"
+    - pwd
+    - ls -al ./target
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+        - ApiGateway/**/*
+        - ApiGateway/*
+        - CI_CD-Templates/trigger/*
+  artifacts:
+    paths:
+      - ./
+    expire_in: 1 day
+
+deploy-ApiGateway:
+  allow_failure: true
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8083
+    SRVC_NAME: ApiGateway
+    ARIF_FLDR: ApiGatewayBuild
+  image: docker:latest
+  stage: deploy
+  tags:
+    - shell-runner-1
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+        - ApiGateway/**/*
+        - ApiGateway/*
+        - CI_CD-Templates/trigger/*    
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --network="host" --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM
+  dependencies:
+    - build-ApiGateway
+
+test-ApiGateway:
+  rules:
+    # - if: $CI_COMMIT_BRANCH == "develop"
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+        - ApiGateway/**/*
+        - ApiGateway/*
+        - CI_CD-Templates/trigger/*
+  allow_failure: true
+  image: maven:latest
+  stage: test
+  tags:
+    - docker-runner-1
+  script:
+    - rm -f .git/index.lock
+    - ls -al
+    - cd ApiGateway
+    - mvn -version
+    - mvn test
+    - echo "ApiGateway test done"
+
+deploy-ApiGateway-on-test-srv:
+  variables:
+    BRANCH_NM: develop
+    SRVC_PORT: 8083
+    SRVC_NAME: ApiGateway
+    ARIF_FLDR: ApiGatewayBuild
+  image: docker:latest
+  stage: deploy-on-test-srv
+  tags:
+    - shell-runner-java-test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      when: manual
+      allow_failure: true
+      changes:
+        - ApiGateway/**/*
+        - ApiGateway/*
+        - CI_CD-Templates/trigger/*      
+  script:
+    - pwd && ls -al
+    - mkdir $ARIF_FLDR && cp -rf $SRVC_NAME/target/*.jar ./$ARIF_FLDR && cp -rf $SRVC_NAME/pom.xml ./$ARIF_FLDR && cp -rf $SRVC_NAME/src ./$ARIF_FLDR && ls -al && ls -al $ARIF_FLDR
+    - SRVC_LCASE=$SRVC_NAME && SRVC_LCASE=$(echo "$SRVC_LCASE" | sed 's/.*/\L&/') && echo "$SRVC_LCASE"
+    - docker build -f $SRVC_NAME/Dockerfile -t a-sber-$SRVC_LCASE-img:$BRANCH_NM .
+    - docker rm -f a-sber-$SRVC_LCASE-container_$BRANCH_NM 2>/dev/null || exit 0
+    - docker run -d -p $SRVC_PORT:$SRVC_PORT --network="host" --name a-sber-$SRVC_LCASE-container_$BRANCH_NM a-sber-$SRVC_LCASE-img:$BRANCH_NM --log-driver=loki --log-opt loki-url="http://localhost:3100/loki/api/v1/push"
+  dependencies:
+    - build-ApiGateway
